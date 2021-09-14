@@ -25,7 +25,6 @@ void new_lum_calc(){
 	
 	ofstream updatedFlux ("updatedFlux.txt");
 	
-	//ifstream fluxFile ("gflux_file.txt");
 	ifstream fluxFile ("../outFile.txt");
 	
 	TFile *f1 = new TFile ("/home/joey/analysis/luminosity/Updated/NickCGenerator/GenerateLam/input/fluxhisto.root");
@@ -47,26 +46,12 @@ void new_lum_calc(){
 	for (int momBin = 0; momBin < n; momBin++){
 		min = 0.6 + 0.1*momBin;
 		max = 0.7 + 0.1*momBin;
-		//min = 0.60 + 0.05*momBin;
-		//max = 0.65 + 0.05*momBin;
 		
 		int count = 0;
 		float lc;
 		float pl =0;
 		float nlam =0;
-		//for(int eBin=0; eBin<binNumber; eBin++){
 		for(int eBin=0; eBin<=46; eBin++){
-		//for(int eBin=startingE; eBin<=46; eBin++){
-
-			/*
-			if (TMath::IsNaN(nlam_calc(Egam_list[eBin], min, max))){
-				count++;
-			}else{
-				pl += path_output(Egam_list[eBin], min, max);
-				nlam += nlam_calc(Egam_list[eBin], min, max);
-				count++;
-			}
-			*/
 			
 			if (Egam_list[eBin] > EgamMin(min+.05)){
 			
@@ -98,9 +83,7 @@ void new_lum_calc(){
 	
 	/**************************** Plotting Path Length  ****************************/ 
 	TCanvas *c1 = new TCanvas("c1","c1");
-	//TGraphErrors *gr1 = new TGraphErrors(n,x,y, 0, error);
 	TGraph *gr1 = new TGraph (n,x,y);
-	//TGraphErrors *gr1 = new TGraphErrors (n,x,y, 0, error);
 	
 	gr1->SetTitle("");
 	gr1->GetXaxis()->SetTitle("P_{#Lambda Lab}");
@@ -120,10 +103,7 @@ void new_lum_calc(){
 
 	gr1->Draw("AP");
 	
-	
-	/**************************** Plotting cos(Theta)_CM  ****************************/
-	//TCanvas *c2 = new TCanvas("c1","c1");
-	//Theta->Draw();
+
 }
 
 
@@ -143,11 +123,9 @@ float path_output(float Egamma, float pMin, float pMax){
 	for(int i =0;i<48;i++){
 		file >> Index >> E >> W >> Order >> C0 >> C1 >> C2 >> C3 >> C4 >> sig0 >> sig1 >> sig2 >> sig3 >> sig4;
 		
-		//cout << "Energy: " << E << endl;
 		//Defining cross section
 		TF1* XS = new TF1("Cross Section", "[0]*(1+ [1]*x + [2]*(0.5*(3*std::pow(x,2) - 1) ) + [3]*(0.5*(5*std::pow(x,3) - 3*x) ) + [4]*(0.125*(35*std::pow(x,4)-30*x*x+3) ))",-1,1);
 		XS->SetParameters(C0, C1, C2, C3, C4, 1, 2, 3, 4);
-		//L[lineno - 69] = XS;
 		
 		if (Egamma == E){
 			L = XS;
@@ -162,8 +140,7 @@ float path_output(float Egamma, float pMin, float pMax){
 
 float nlam_calc(float Egamma, float pMin, float pMax){
 	
-	//ifstream file ("KLambda_legendre.txt");
-	ifstream file ("test_file.txt");
+	ifstream file ("KLambda_legendre.txt");
 	
 	gSystem->Load("libMathMore");
 	string line;
@@ -192,9 +169,7 @@ float nlam_calc(float Egamma, float pMin, float pMax){
 	float Luminosity = Nlam*pathlength*1E-30;  //cm^2;
 	
 	file.close();
-	
-	//cout << pathlength << "\t" << Nlam << endl;
-	
+		
 	if (TMath::IsNaN(Nlam)){
 		return 0;
 	}
@@ -222,12 +197,8 @@ float Path_Length(float egam, TF1* xs, float lowerMomentum, float upperMomentum)
 		
 		float xs_check = ((float)rand()/(float)(RAND_MAX)) * 3.0;
 		
-		//cout << "cos(theta) =  " << CthCM(egam, p) << endl;
 		float cross_section = xs->Eval(CthCM(egam, p));
 		
-		//if (TMath::IsNaN(CthL(egam, p))) { cout << "Egamma, plam[low,high]: " << egam << ", [" << lowerMomentum << "," << upperMomentum <<"]" << endl; }
-		
-		//float cross_section = xs->Eval(CthCM_Kaon(egam, p));
 		float theta = acos( CthL(egam, p) );
 		float upperLimit = CthCM(egam, upperMomentum);
 		float lowerLimit = CthCM(egam, lowerMomentum);
@@ -236,13 +207,10 @@ float Path_Length(float egam, TF1* xs, float lowerMomentum, float upperMomentum)
 	
 			float start = ((float)rand()/(float)(RAND_MAX)) * targetLength;
 	
-			//float r = ((float)rand()/(float)(RAND_MAX)) *.01;
 			float r = ((float)rand()/(float)(RAND_MAX)) *.02 + (-.01);
 
-			//float phi = (((float)rand()/(float)(RAND_MAX)) *2*pi);
 			float phi = (((float)rand()/(float)(RAND_MAX)) *2*pi + (-pi));
 			
-			//float phi_start = (((float)rand()/(float)(RAND_MAX)) *2*pi);
 			float phi_start = (((float)rand()/(float)(RAND_MAX)) *2*pi + (-pi));
 			float xInit = r*cos(phi_start);
 			float yInit = r*sin(phi_start);
@@ -283,8 +251,6 @@ float Path_Length(float egam, TF1* xs, float lowerMomentum, float upperMomentum)
 	return path_length;
 }
 
-/********************  TESTED EQUATIONS  ********************/
-
 
 float CthCM(float egam, float p){
 	float s = 2*xmpr*egam+xmpr*xmpr;
@@ -295,16 +261,12 @@ float CthCM(float egam, float p){
 	float Ek = egam + xmpr - Elam;
 	float pk = sqrt(Ek*Ek-xmk*xmk);
 	
-	//float t = -(2*xmpr*Elam - xmpr*xmpr - mlam*mlam);
 	float t = -2*xmpr*Elam + xmpr*xmpr + mlam*mlam;
 	float cthK = (t+ 2*egam*Ek - xmk*xmk) / (2*egam*abs(pk));
 	float angK = acos(cthK);
-	//float cthcm = cos( asin((pk/pcm)*sin(angK)) );
 	float cthcm = cos( asin((pk/pcm_prime)*sin(angK)) );
 	
 	if (p > p0(egam)){ cthcm=-cthcm; }
-	//if (cthcm<-1.0){ cthcm=-1.0; }
-	//if (cthcm>1.0){ cthcm=1.0; }
 	
 	if (TMath::IsNaN(cthcm)) { cthcm = -1.0; }
 	
@@ -321,165 +283,13 @@ float CthL(float egam, float p){
 	float Elam = sqrt(p*p+mlam*mlam);
 	float t = -(2*xmpr*Elam - xmpr*xmpr - mlam*mlam);
 	float cthcm = CthCM(egam, p);
-	//float cthL = -cos( asin((pcm/p)*sin(acos(cthcm))) );
 	float cthL = cos( asin((pcm/p)*sin(pi-acos(cthcm))) );
 	
 	if (p > p0(egam)){ cthL=-cthL; }
-	//if (cthL<-1.0){ cthL=-1.0; }
-	//if (cthL>1.0){ cthL=1.0; }
-	
+
 	return cthL;
 }
 
-
-/************************************************************/
-
-/*
-//Calculation partly from PDG
-float CthCM(float egam, float p){
-	float Elam = sqrt(p*p+mlam*mlam);
-	float Ek = egam + xmpr - Elam;
-	float pk = sqrt(Ek*Ek-xmk*xmk);
-
-	float t = -(2*xmpr*Elam - xmpr*xmpr - mlam*mlam);
-	float s = 2*xmpr*egam+xmpr*xmpr;
-	
-	float pcm = sqrt(pow(s-xmpr*xmpr,2)/(4*s));
-	float pcm_prime = sqrt(((s-xmk*xmk-mlam*mlam)*(s-xmk*xmk-mlam*mlam)-4*xmk*xmk*mlam*mlam)/(4*s));
-	
-	//Ecm from pdg
-	float Ecm = sqrt(xmpr*xmpr + 2*egam*xmpr);
-	float xi = log( (pcm+sqrt(xmpr*xmpr+pcm*pcm)/xmpr) );
-	
-	float t0 = pow( (-xmk*xmk-xmpr*xmpr+mlam*mlam)/(2.0*sqrt(s)) ,2) - pow( pcm-pcm_prime ,2);
-	
-	float theta = 2.0*asin( sqrt((-t+t0)/ (4.0*pcm*pcm_prime)) );
-	
-	float cthcm = cos(theta);
-	//if (p > p0(egam)){ cthcm=-cthcm; }
-	return cthcm;	
-	
-}
-*/
-
-/*
-float CthCM(float egam, float p){
-	float s = 2*xmpr*egam+xmpr*xmpr;
-	float pcm = sqrt(pow(s-xmpr*xmpr,2)/(4*s));
-	float pcm_prime = sqrt(((s-xmk*xmk-mlam*mlam)*(s-xmk*xmk-mlam*mlam)-4*xmk*xmk*mlam*mlam)/(4*s));
-
-	float Elam = sqrt(p*p+mlam*mlam);
-	float Ek = egam + xmpr - Elam;
-	float pk = sqrt(Ek*Ek-xmk*xmk);
-	
-	//float t = -(2*xmpr*Elam - xmpr*xmpr - mlam*mlam);
-	float t = -2*xmpr*Elam + xmpr*xmpr + mlam*mlam;
-	float cthK = (t+ 2*egam*Ek - xmk*xmk) / (2*egam*abs(pk));
-	float angK = acos(cthK);
-	//float cthcm = cos( asin((pk/pcm)*sin(angK)) );
-	float cthcm = cos( asin((pk/pcm_prime)*sin(angK)) );
-	
-	//if (p > p0(egam)){ cthcm=-cthcm; }
-	return cthcm;
-}
-*/
-
-/*
-float CthCM(float egam, float p){	
-	float s = 2*xmpr*egam+xmpr*xmpr;
-	float pcm = sqrt((s-xmpr*xmpr)*(s-xmpr*xmpr)/(4*s));
-	float pcm_prime = sqrt(((s-xmk*xmk-mlam*mlam)*(s-xmk*xmk-mlam*mlam)-4*xmk*xmk*mlam*mlam)/(4*s));
-	float xi = log( (pcm+sqrt(xmpr*xmpr+pcm*pcm)/xmpr) );
-	
-	float Elam = sqrt(p*p+mlam*mlam);
-	float Ek = egam + xmpr - Elam;
-	float pk = sqrt(Ek*Ek-xmk*xmk);
-	
-	float t = -(2*xmpr*Elam - xmpr*xmpr - mlam*mlam);
-	//float cthK = (t+ 2*egam*Ek - xmk*xmk) / (2*egam*abs(pk));
-	
-	//float cthcm = (pk*cthK - sqrt(pcm*pcm+xmk*xmk)*sinh(xi))/(pcm*cosh(xi));
-	
-	//float cthcm = ( sqrt(pcm_prime*pcm_prime+mlam*mlam)*cosh(xi)-Elam )/( pcm_prime*sinh(xi) );
-	float cthcm = ( sqrt(pcm_prime*pcm_prime+xmk*xmk)*cosh(xi)-Ek )/( pcm_prime*sinh(xi) );
-	
-	if (p > p0(egam)){ cthcm=-cthcm; }
-	//if (cthcm<-1.0){ cthcm=-1.0; }
-	//if (cthcm>1.0){ cthcm=1.0; }
-	
-	return cthcm;
-}
-*/
-/*
-float CthCM(float egam, float p){	
-	float s = 2*xmpr*egam+xmpr*xmpr;
-	float pcm = sqrt((s-xmpr*xmpr)*(s-xmpr*xmpr)/(4*s));
-	float pcm_prime = sqrt(((s-xmk*xmk-mlam*mlam)*(s-xmk*xmk-mlam*mlam)-4*xmk*xmk*mlam*mlam)/(4*s));
-	float xi = log( (pcm+sqrt(xmpr*xmpr+pcm*pcm))/xmpr );
-	
-	float Elam = sqrt(p*p+mlam*mlam);
-	float Ek = egam + xmpr - Elam;
-	float pk = sqrt(Ek*Ek-xmk*xmk);
-	
-	float t = -(2*xmpr*Elam - xmpr*xmpr - mlam*mlam);
-	//float cthK = (t+ 2*egam*Ek - xmk*xmk) / (2*egam*abs(pk));
-	
-	//float cthcm = (pk*cthK - sqrt(pcm*pcm+xmk*xmk)*sinh(xi))/(pcm*cosh(xi));
-	
-	float cthcm = ( sqrt(pcm_prime*pcm_prime+mlam*mlam)*cosh(xi)-Elam )/( pcm_prime*sinh(xi) );
-	//float cthcm = ( sqrt(pcm_prime*pcm_prime+xmk*xmk)*cosh(xi)-Ek )/( pcm_prime*sinh(xi) );
-	
-	//if (p > p0(egam)){ cthcm=-cthcm; }
-	//if (cthcm<-1.0){ cthcm=-1.0; }
-	//if (cthcm>1.0){ cthcm=1.0; }
-	
-	return cthcm;
-}
-*/
-/*
-float CthL(float egam, float p){
-	float s = 2*xmpr*egam+xmpr*xmpr;
-	float pcm = sqrt((s-xmpr*xmpr)*(s-xmpr*xmpr)/(4*s));
-	float pcm_prime = sqrt(((s-xmk*xmk-mlam*mlam)*(s-xmk*xmk-mlam*mlam)-4*xmk*xmk*mlam*mlam)/(4*s));
-	float xi = log( (pcm+sqrt(xmpr*xmpr+pcm*pcm))/xmpr );
-	
-	float Elam = sqrt(p*p+mlam*mlam);
-	
-	float t = -(2*xmpr*Elam - xmpr*xmpr - mlam*mlam);
-	float cthcm = CthCM(egam, p);
-	
-	//float cthL = cos( asin((pcm_prime/p)*sin(acos(cthcm))) );
-	float cthL = ( -pcm_prime*cthcm*cosh(xi)+sqrt(pcm_prime*pcm_prime+mlam*mlam)*sinh(xi) )/p;
-	
-	//if (p > p0(egam)){ cthL=-cthL; }
-	//if (cthL<-1.0){ cthL=-1.0; }
-	//if (cthL>1.0){ cthL=1.0; }
-	
-	return cthL;
-}
-*/
-
-/*
-float CthL(float egam, float p){
-	float s = 2*xmpr*egam+xmpr*xmpr;
-	float pcm = sqrt((s-xmpr*xmpr)*(s-xmpr*xmpr)/(4*s));
-	float pcm_prime = sqrt(((s-xmk*xmk-mlam*mlam)*(s-xmk*xmk-mlam*mlam)-4*xmk*xmk*mlam*mlam)/(4*s));
-	float xi = log( (pcm+sqrt(xmpr*xmpr+pcm*pcm))/xmpr );
-	
-	float Elam = sqrt(p*p+mlam*mlam);
-	
-	float t = -(2*xmpr*Elam - xmpr*xmpr - mlam*mlam);
-	float cthcm = CthCM(egam, p);
-	
-	float cthL = cos( asin((pcm_prime/p)*sin(acos(cthcm))) );
-	
-	//if (p > p0(egam)){ cthL=-cthL; }
-	//if (cthL<-1.0){ cthL=-1.0; }
-	//if (cthL>1.0){ cthL=1.0; }
-	
-	return cthL;
-}
-*/
 
 float EgamMin(Float_t P_lambda){
 	//Float_t Emin = 0.890938 *(P_lambda) + 0.168662;
@@ -498,7 +308,6 @@ float p0(float egam){
 	float pcm_prime = sqrt(((s-xmk*xmk-mlam*mlam)*(s-xmk*xmk-mlam*mlam)-4*xmk*xmk*mlam*mlam)/(4*s));
 	float xi = log( (pcm+sqrt(xmpr*xmpr+pcm*pcm)/xmpr) );
 	
-	//float Elam = sqrt(pcm_prime*pcm_prime +mlam*mlam)*cosh(xi) - pcm_prime*cthcm*sinh(xi);  //<--When cthcm = 0, what is p?
 	float Elam = sqrt(pcm_prime*pcm_prime +mlam*mlam)*cosh(xi);
 	float p = sqrt(Elam*Elam-mlam*mlam);
 
