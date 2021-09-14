@@ -155,13 +155,7 @@ float CthCM(float egam, float p){
 	float Ek = egam + xmpr - Elam;
 	float pk = sqrt(Ek*Ek-xmk*xmk);
 	
-	//float t = -(2*xmpr*Elam - xmpr*xmpr - mlam*mlam);
-	//float cthcm = (t+ 2*egam*Ek - xmk*xmk) / (2*egam*abs(pk));
-	
-	//float cthcm = (pk*cthK - sqrt(pcm*pcm+xmk*xmk)*sinh(xi))/(pcm*cosh(xi));
-	
 	float cthcm = ( sqrt(pcm_prime*pcm_prime+xmk*xmk)*cosh(xi)-Ek )/( pcm_prime*sinh(xi) );
-	//float cthcm = ( sqrt(pcm*pcm+xmk*xmk)*cosh(xi)-Ek )/( pcm*sinh(xi) );
 	
 	if (p > p0(egam)){ cthcm=-cthcm; }
 	if (cthcm<-1.0){ cthcm=-1.0; }
